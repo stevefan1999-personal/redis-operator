@@ -4,10 +4,10 @@ VERSION := v1.0.0
 SERVICE_NAME := redis-operator
 
 # Docker image name for this project
-IMAGE_NAME := spotahome/$(SERVICE_NAME)
+IMAGE_NAME := stevefan1999/$(SERVICE_NAME)
 
 # Repository url for this project
-REPOSITORY := quay.io/$(IMAGE_NAME)
+REPOSITORY := docker.io/$(IMAGE_NAME)
 
 # Shell to use for running scripts
 SHELL := $(shell which bash)
@@ -51,7 +51,7 @@ default: build
 # Run the development environment in non-daemonized mode (foreground)
 .PHONY: docker-build
 docker-build: deps-development
-	docker build \
+	docker buildx build \
 		--build-arg uid=$(UID) \
 		-t $(REPOSITORY)-dev:latest \
 		-t $(REPOSITORY)-dev:$(COMMIT) \
@@ -76,7 +76,7 @@ run: docker-build
 # Build the production image based on the public one
 .PHONY: image
 image: deps-development
-	docker build \
+	docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 --push \
 	-t $(SERVICE_NAME) \
 	-t $(REPOSITORY):latest \
 	-t $(REPOSITORY):$(COMMIT) \
